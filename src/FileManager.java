@@ -1,24 +1,65 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.util.Scanner;
+import java.io.*;
 
 public class FileManager {
 
-    public static void createFile(String fileName) {
-        File file = new File(fileName + ".txt");
+    private String filePath;
+    private BufferedReader bufferedReader;
+    private BufferedWriter bufferedWriter;
+
+    public FileManager(String filePath) {
+        this.filePath = filePath;
     }
 
-    public static void save(String fileName, String text) throws FileNotFoundException {
-        PrintWriter printWriter = new PrintWriter(fileName + ".txt");
-        printWriter.println(text);
-        printWriter.close();
+    public void initReaderWriter() {
+        try {
+            bufferedWriter = new BufferedWriter(new FileWriter(filePath, true));
+            bufferedReader = new BufferedReader(new FileReader(filePath));
+            //bufferedWriter = new BufferedWriter(new FileWriter(filePath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static String readSentence(String fileName) throws FileNotFoundException {
-        File file = new File(fileName + ".txt");
-        Scanner in = new Scanner(file);
-        String sentence = in.nextLine();
-        return sentence;
+    public void save(String text) throws IOException {
+       // bufferedWriter.write(text); // look at initReaderWriter
+        bufferedWriter.append(' ');
+        bufferedWriter.append(text);
+    }
+
+    public String readSentence() throws IOException {
+        String currentLine = bufferedReader.readLine();
+        return currentLine;
+    }
+
+    public String readWholeFile() throws IOException {
+        StringBuilder builder = new StringBuilder();
+        String currentLine = bufferedReader.readLine();
+        while (currentLine != null) {
+            builder.append(currentLine);
+            builder.append("\n");
+            currentLine = bufferedReader.readLine();
+        }
+        return builder.toString();
+    }
+
+    public void closeBufferedReader() {
+        try {
+            bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void closeBufferedWriter() {
+        try {
+            bufferedWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void delete() {
+        File file = new File(filePath);
+        file.delete();
     }
 }
